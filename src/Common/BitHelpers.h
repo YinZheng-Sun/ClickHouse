@@ -127,3 +127,18 @@ constexpr bool isPowerOf2(T number)
 {
     return number > 0 && (number & (number - 1)) == 0;
 }
+
+template <typename E>
+constexpr auto to_underlying(E e) noexcept
+{
+    return static_cast<std::underlying_type_t<E>>(e);
+}
+
+#pragma clang diagnostic push
+#pragma clang diagnostic ignored "-Wreserved-macro-identifier"
+#define __bf_shf(x) (__builtin_ffsll(x) - 1)
+#pragma clang diagnostic pop
+
+#define GENMASK(h, l) (((~0UL) - (1UL << (l)) + 1) & (~0UL >> (sizeof(long)*8 - 1 - (h))))
+#define FIELD_GET(_mask, _reg) (decltype(_mask))(((_reg) & (_mask)) >> __bf_shf(_mask))
+#define FIELD_PREP(_mask, _val) (((decltype(_mask))(_val) << __bf_shf(_mask)) & (_mask))

@@ -3,6 +3,7 @@
 #include <Parsers/ASTCheckQuery.h>
 #include <Parsers/ASTCreateQuery.h>
 #include <Parsers/ASTCreateFunctionQuery.h>
+#include <Parsers/ASTCreateUserDefinedFunctionQuery.h>
 #include <Parsers/ASTCreateIndexQuery.h>
 #include <Parsers/ASTDeleteQuery.h>
 #include <Parsers/ASTDropFunctionQuery.h>
@@ -315,6 +316,10 @@ InterpreterFactory::InterpreterPtr InterpreterFactory::get(ASTPtr & query, Conte
     else if (query->as<ASTCreateFunctionQuery>())
     {
         interpreter_name = "InterpreterCreateFunctionQuery";
+    }
+    else if (query->as<ASTCreateUserDefinedFunctionQuery>())
+    {
+        interpreter_name = "InterpreterCreateUserDefinedFunctionQuery";
     }
     else if (query->as<ASTDropFunctionQuery>())
     {

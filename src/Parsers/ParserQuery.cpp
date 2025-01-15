@@ -1,5 +1,6 @@
 #include <Parsers/ParserAlterQuery.h>
 #include <Parsers/ParserCreateFunctionQuery.h>
+#include <Parsers/ParserCreateUserDefinedFunctionQuery.h>
 #include <Parsers/ParserCreateQuery.h>
 #include <Parsers/ParserCreateIndexQuery.h>
 #include <Parsers/ParserDropFunctionQuery.h>
@@ -47,6 +48,7 @@ bool ParserQuery::parseImpl(Pos & pos, ASTPtr & node, Expected & expected)
     ParserCreateRowPolicyQuery create_row_policy_p;
     ParserCreateSettingsProfileQuery create_settings_profile_p;
     ParserCreateFunctionQuery create_function_p;
+    ParserCreateUserDefinedFunctionQuery create_user_defined_function_p; 
     ParserDropFunctionQuery drop_function_p;
     ParserCreateNamedCollectionQuery create_named_collection_p;
     ParserDropNamedCollectionQuery drop_named_collection_p;
@@ -73,6 +75,7 @@ bool ParserQuery::parseImpl(Pos & pos, ASTPtr & node, Expected & expected)
         || create_row_policy_p.parse(pos, node, expected)
         || create_settings_profile_p.parse(pos, node, expected)
         || create_function_p.parse(pos, node, expected)
+        || create_user_defined_function_p.parse(pos, node, expected)
         || drop_function_p.parse(pos, node, expected)
         || create_named_collection_p.parse(pos, node, expected)
         || drop_named_collection_p.parse(pos, node, expected)

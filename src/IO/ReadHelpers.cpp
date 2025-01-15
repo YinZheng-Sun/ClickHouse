@@ -1050,6 +1050,35 @@ template void readJSONStringInto<NullOutput>(NullOutput & s, ReadBuffer & buf);
 template void readJSONStringInto<String>(String & s, ReadBuffer & buf);
 template bool readJSONStringInto<String, bool>(String & s, ReadBuffer & buf);
 
+bool readDollarQuotedStringInto(String & s, ReadBuffer & buf, String & tag, size_t size) {
+    if (*buf.position() != '$') {
+        return false;
+    }
+
+    const char *tag_end = find_first_symbols<'$'>(buf.position()+1, buf.position() + size);
+
+    if (tag_end == nullptr) {
+        return false;
+    }
+
+    appendToStringOrVector(tag, buf, tag_end+1);
+    size_t tag_length = tag.length();
+
+    while(tag_length--) {
+        buf.position()++;
+    }
+
+    const char *output = strstr(buf.position(), &tag[0]);
+
+    if (output == nullptr) {
+        return false;
+    }
+
+    appendToStringOrVector(s, buf, output-1);
+
+    return true;
+}
+
 template <typename Vector, typename ReturnType, char opening_bracket, char closing_bracket>
 ReturnType readJSONObjectOrArrayPossiblyInvalid(Vector & s, ReadBuffer & buf)
 {

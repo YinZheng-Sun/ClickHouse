@@ -23,8 +23,11 @@ public:
     /// Register function for function_name in factory for specified create_function_query.
     bool registerFunction(const ContextMutablePtr & context, const String & function_name, ASTPtr create_function_query, bool throw_if_exists, bool replace_if_exists);
 
+    bool registerUserDefinedFunction(const ContextMutablePtr & context, const String & function_name, ASTPtr create_function_query);
     /// Unregister function for function_name.
     bool unregisterFunction(const ContextMutablePtr & context, const String & function_name, bool throw_if_not_exists);
+
+    bool unregisterUserDefinedFunction(const ContextMutablePtr & context, const String & function_name);
 
     /// Get function create query for function_name. If no function registered with function_name throws exception.
     ASTPtr get(const String & function_name) const;

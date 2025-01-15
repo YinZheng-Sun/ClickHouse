@@ -668,6 +668,8 @@ bool tryReadJSONStringInto(Vector & s, ReadBuffer & buf)
     return readJSONStringInto<Vector, bool>(s, buf);
 }
 
+bool readDollarQuotedStringInto(String & s, ReadBuffer & buf, String & tag, size_t size);
+
 template <bool enable_sql_style_quoting, typename Vector>
 bool tryReadQuotedStringInto(Vector & s, ReadBuffer & buf);
 

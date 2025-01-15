@@ -10,6 +10,7 @@
 #include <Interpreters/Context.h>
 #include <Interpreters/FunctionNameNormalizer.h>
 #include <Parsers/ASTCreateFunctionQuery.h>
+#include <Parsers/ASTCreateUserDefinedFunctionQuery.h>
 #include <Parsers/ASTFunction.h>
 #include <Parsers/ASTIdentifier.h>
 #include <Common/quoteString.h>
@@ -150,6 +151,34 @@ bool UserDefinedSQLFunctionFactory::registerFunction(const ContextMutablePtr & c
     return true;
 }
 
+bool UserDefinedSQLFunctionFactory::registerUserDefinedFunction(const ContextMutablePtr & context, const String & function_name, ASTPtr create_function_query)
+{
+    // checkCanBeRegistered(context, function_name, *create_function_query);
+    // create_function_query = normalizeCreateFunctionQuery(*create_function_query);
+
+    try
+    {
+        auto & loader = context->getUserDefinedSQLObjectsStorage();
+        bool stored = loader.storeObject(
+            context,
+            UserDefinedSQLObjectType::Function,
+            function_name,
+            create_function_query,
+            false,
+            true,
+            context->getSettingsRef());
+        if (!stored)
+            return false;
+    }
+    catch (Exception & exception)
+    {
+        exception.addMessage(fmt::format("while storing user defined function {}", backQuote(function_name)));
+        throw;
+    }
+
+    return true;
+}
+
 bool UserDefinedSQLFunctionFactory::unregisterFunction(const ContextMutablePtr & context, const String & function_name, bool throw_if_not_exists)
 {
     checkCanBeUnregistered(context, function_name);
@@ -162,6 +191,30 @@ bool UserDefinedSQLFunctionFactory::unregisterFunction(const ContextMutablePtr &
             UserDefinedSQLObjectType::Function,
             function_name,
             throw_if_not_exists);
+        if (!removed)
+            return false;
+    }
+    catch (Exception & exception)
+    {
+        exception.addMessage(fmt::format("while removing user defined function {}", backQuote(function_name)));
+        throw;
+    }
+
+    return true;
+}
+
+bool UserDefinedSQLFunctionFactory::unregisterUserDefinedFunction(const ContextMutablePtr & context, const String & function_name)
+{
+    // checkCanBeUnregistered(context, function_name);
+
+    try
+    {
+        auto & storage = context->getUserDefinedSQLObjectsStorage();
+        bool removed = storage.removeObject(
+            context,
+            UserDefinedSQLObjectType::Function,
+            function_name,
+            false);
         if (!removed)
             return false;
     }
